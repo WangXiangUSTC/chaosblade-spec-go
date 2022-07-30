@@ -19,12 +19,13 @@ package channel
 import (
 	"context"
 	"fmt"
-	"github.com/chaosblade-io/chaosblade-spec-go/log"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/chaosblade-io/chaosblade-spec-go/log"
 
 	"github.com/chaosblade-io/chaosblade-spec-go/spec"
 	"github.com/chaosblade-io/chaosblade-spec-go/util"
@@ -66,7 +67,7 @@ func (l *LocalChannel) GetPidsByProcessCmdName(processName string, ctx context.C
 	for _, p := range processes {
 		name, err := p.Name()
 		if err != nil {
-			log.Debugf(ctx, "get process name error, pid: %s, err: %v", p.Pid, err)
+			log.Infof(ctx, "get process name error, pid: %s, err: %v", p.Pid, err)
 			continue
 		}
 		if processName != name {
@@ -77,7 +78,7 @@ func (l *LocalChannel) GetPidsByProcessCmdName(processName string, ctx context.C
 		}
 		cmdline, _ := p.Cmdline()
 		containsExcludeProcess := false
-		log.Debugf(ctx, "process info, name: %s, cmdline: %s, processName: %s", name, cmdline, processName)
+		log.Infof(ctx, "process info, name: %s, cmdline: %s, processName: %s", name, cmdline, processName)
 		for _, ep := range excludeProcesses {
 			if strings.Contains(cmdline, strings.TrimSpace(ep)) {
 				containsExcludeProcess = true
@@ -121,7 +122,7 @@ func (l *LocalChannel) GetPidsByProcessName(processName string, ctx context.Cont
 		if processCommandName != "" {
 			name, err := p.Name()
 			if err != nil {
-				log.Debugf(ctx, "get process command error, processCommand: %s, err: %v, ", processCommandName, err)
+				log.Infof(ctx, "get process command error, processCommand: %s, err: %v, ", processCommandName, err)
 				continue
 			}
 			if !strings.Contains(name, processCommandName) {
@@ -130,13 +131,13 @@ func (l *LocalChannel) GetPidsByProcessName(processName string, ctx context.Cont
 		}
 		cmdline, err := p.Cmdline()
 		if err != nil {
-			log.Debugf(ctx, "get command line error, pid: %s, err: %v", p.Pid, err)
+			log.Infof(ctx, "get command line error, pid: %s, err: %v", p.Pid, err)
 			continue
 		}
 		if !strings.Contains(cmdline, processName) {
 			continue
 		}
-		log.Debugf(ctx, "process info, cmdline: %s, processName: %s, processCommand: %s, otherConditionProcessName: %s, excludeProcesses: %s",
+		log.Infof(ctx, "process info, cmdline: %s, processName: %s, processCommand: %s, otherConditionProcessName: %s, excludeProcesses: %s",
 			cmdline, processName, processCommandName, otherConditionProcessName, excludeProcesses)
 
 		if otherConditionProcessName != "" && !strings.Contains(cmdline, otherConditionProcessName) {
@@ -263,12 +264,12 @@ func execScript(ctx context.Context, script, args string) *spec.Response {
 	if ctx == context.Background() {
 		ctx = newCtx
 	}
-	log.Debugf(ctx, "Command: %s %s", script, args)
+	log.Infof(ctx, "Command: %s %s", script, args)
 	// TODO /bin/sh 的问题
 	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script+" "+args)
 	output, err := cmd.CombinedOutput()
 	outMsg := string(output)
-	log.Debugf(ctx, "Command Result, output: %v, err: %v", outMsg, err)
+	log.Infof(ctx, "Command Result, output: %v, err: %v", outMsg, err)
 	// TODO shell-init错误
 	if strings.TrimSpace(outMsg) != "" {
 		resp := spec.Decode(outMsg, nil)

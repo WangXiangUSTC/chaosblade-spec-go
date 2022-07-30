@@ -3,15 +3,16 @@ package channel
 import (
 	"context"
 	"fmt"
-	"github.com/chaosblade-io/chaosblade-spec-go/log"
-	"github.com/chaosblade-io/chaosblade-spec-go/spec"
-	"github.com/chaosblade-io/chaosblade-spec-go/util"
 	"os"
 	"os/exec"
 	"path"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/chaosblade-io/chaosblade-spec-go/log"
+	"github.com/chaosblade-io/chaosblade-spec-go/spec"
+	"github.com/chaosblade-io/chaosblade-spec-go/util"
 )
 
 const (
@@ -74,14 +75,14 @@ func (l *NSExecChannel) Run(ctx context.Context, script, args string) *spec.Resp
 		programPath = path.Join(programPath, spec.BinPath)
 	}
 	bin := path.Join(programPath, spec.NSExecBin)
-	log.Debugf(ctx,`Command: %s %s "%s"`, bin, ns_script, args)
+	log.Infof(ctx, `Command: %s %s "%s"`, bin, ns_script, args)
 
 	split := strings.Split(ns_script, " ")
 
 	cmd := exec.CommandContext(timeoutCtx, bin, append(split, args)...)
 	output, err := cmd.CombinedOutput()
 	outMsg := string(output)
-	log.Debugf(ctx, "Command Result, output: %v, err: %v", outMsg, err)
+	log.Infof(ctx, "Command Result, output: %v, err: %v", outMsg, err)
 	// TODO shell-init错误
 	if strings.TrimSpace(outMsg) != "" {
 		resp := spec.Decode(outMsg, nil)
